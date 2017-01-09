@@ -3,10 +3,12 @@ from setuptools import setup, Extension
 from Cython.Build import cythonize
 from Cython.Distutils import build_ext
 
+import numpy
+
 
 ext = Extension('noisily.noise',
         sources=['noisily/noise.pyx'],
-        include_dirs=['noise-c/include'],
+        include_dirs=['noise-c/include', numpy.get_include()],
         extra_objects=['noise-c/target/release/libnoise_c.a'],
 )
 

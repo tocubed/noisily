@@ -58,7 +58,7 @@ RUST_CHANNEL=stable
 if [[ $1 == "osx" ]]; then
     brew update
     brew install mmv
-    pip install -U pip setuptools Cython wheel
+
     install_rust $RUST_CHANNEL
 
 	# Build noise-c
@@ -66,10 +66,13 @@ if [[ $1 == "osx" ]]; then
 	cargo build --release
 	popd
 
+    pip install -U pip setuptools wheel Cython numpy
     pip wheel . -w ./wheelhouse
     mmv "./wheelhouse/noisily-*-cp*-cp*-macosx*.whl" \
         "./wheelhouse/noisily-#1-py2.py3-none-macosx#4.whl"
     pip install -v noisily --no-index -f ./wheelhouse
+
+	pushd ./tests
 	python ./test.py
 else
     PYBIN=/opt/python/cp27-cp27m/bin
@@ -91,8 +94,11 @@ else
     # We don't support Python 2.6
     rm -rf /opt/python/cp26*
 
-	# Install Cython requirement
-	${PYBIN}/python -m pip install Cython
+	# Install libraries needed for compiling the extension
+	yum -q -y install mmv
+
+	# Install Cython and numpy requirement
+	${PYBIN}/python -m pip install -U Cython numpy
 
     # Compile wheel
     ${PYBIN}/python -m pip wheel /io/ -w /wheelhouse/
@@ -107,8 +113,8 @@ else
     done
 
     # Rename wheels to match all Python versions
-    mmv "/io/wheelhouse/rust_fst-*-cp*-cp*-manylinux1_*.whl" \
-        "/io/wheelhouse/rust_fst-#1-py2.py3-none-manylinux1_#4.whl"
+    mmv "/io/wheelhouse/noisily-*-cp*-cp*-manylinux1_*.whl" \
+        "/io/wheelhouse/noisily-#1-py2.py3-none-manylinux1_#4.whl"
 
     # Set permissions on wheels
     chmod -R a+rw /io/wheelhouse
@@ -116,7 +122,7 @@ else
     # Install packages and test with all Python versions
     for PYBIN in /opt/python/*/bin/; do
         ${PYBIN}/python -m pip install noisily --no-index -f /io/wheelhouse
-        ${PYBIN}/python /io/test.py
+        ${PYBIN}/python /io/tests/test.py
         clean_project
     done
 fi
