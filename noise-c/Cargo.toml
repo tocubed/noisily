@@ -1,0 +1,15 @@
+[package]
+name = "noise-c"
+version = "0.1.0"
+authors = ["Priyank Patel <tocubed@gmail.com>"]
+build = "build.rs"
+
+[lib]
+name = "noise_c"
+crate-type = ["cdylib"]
+
+[dependencies]
+noise = { git = "https://github.com/tocubed/noise-rs" }
+
+[build-dependencies]
+rusty-cheddar = "0.3.0"

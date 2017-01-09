@@ -1,0 +1,13 @@
+# Python
+build/
+*.egg-info/
+__pycache__/
+
+# Cython
+*.so
+*.c
+
+# Rust
+target/
+Cargo.lock
+*.h
