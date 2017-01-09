@@ -1,20 +1,26 @@
-from setuptools import setup, Extension, find_packages
+from setuptools import setup, Extension
 
 from Cython.Build import cythonize
 from Cython.Distutils import build_ext
 
-ext = Extension("noisily.noise",
-        sources=["noisily/noise.pyx",],
-        libraries=["noise_c",],
-        library_dirs=["noise-c/target/release",],
-        include_dirs=["noise-c/include",],
-        runtime_library_dirs=["noise-c/target/release",],
+
+ext = Extension('noisily.noise',
+        sources=['noisily/noise.pyx'],
+        include_dirs=['noise-c/include'],
+        extra_objects=['noise-c/target/release/libnoise_c.a'],
 )
 
 extensions = [ext,]
 
 setup(
-    name="noisily",
+    name='noisily',
+    version='0.0.1',
+    author='Priyank Patel',
+    author_email='tocubed@gmail.com',
+    license='MIT',
+    url='https://github.com/tocubed/noisily',
+    install_requires=['numpy>=1.11.0'],
     ext_modules=cythonize(extensions),
     cmdclass={'build_ext': build_ext},
+    packages=['noisily'],
 )
