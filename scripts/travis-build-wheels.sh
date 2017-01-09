@@ -1,6 +1,10 @@
 #!/bin/bash
 set -e -x
 
+OPENSSL_VERSION=1.0.2j
+CURL_VERSION=7.49.1
+RUST_CHANNEL=stable
+
 function install_openssl {
     # Compile and parallel-install a newer OpenSSL version so that curl can
     # download from the rust servers
@@ -44,46 +48,26 @@ function update_certificates {
 function clean_project {
     # Remove compiled files that might cause conflicts
     pushd /io/
-    rm -rf build *.egg-info
+    rm -rf build dist *.egg-info
     find ./ -name "__pycache__" -type d -print0 |xargs rm -rf --
     popd
 }
 
-OPENSSL_VERSION=1.0.2j
-CURL_VERSION=7.49.1
-RUST_CHANNEL=stable
-
-# It doesn't matter with which Python version we build the wheel, so we
-# use the oldest supported one
 if [[ $1 == "osx" ]]; then
-    brew update
-    brew install mmv
-
     install_rust $RUST_CHANNEL
-
-	# Build noise-c
-	pushd ./noise-c/
-	cargo build --release
-	popd
 
     pip install -U pip setuptools wheel Cython numpy
     pip wheel . -w ./wheelhouse
-    mmv "./wheelhouse/noisily-*-cp*-cp*-macosx*.whl" \
-        "./wheelhouse/noisily-#1-py2.py3-none-macosx#4.whl"
     pip install -v noisily --no-index -f ./wheelhouse
 
 	pushd ./tests
 	python ./test.py
 else
-    PYBIN=/opt/python/cp27-cp27m/bin
-    # Clean build files
-    clean_project
-
     install_openssl $OPENSSL_VERSION
     install_curl $CURL_VERSION
     install_rust $RUST_CHANNEL
 
-	# Build noise-c
+	# Pre-build libraries to avoid repeatedly building from setup.py
 	pushd /io/noise-c/
 	cargo build --release
 	popd
@@ -91,39 +75,27 @@ else
     # Remove old wheels
     rm -rf /io/wheelhouse/* || echo "No old wheels to delete"
 
-    # We don't support Python 2.6
+    # Remove unsupported Python versions
     rm -rf /opt/python/cp26*
 
-	# Install libraries needed for compiling the extension
-	yum -q -y install mmv
-
-	# Install Cython and numpy requirement
-	${PYBIN}/python -m pip install -U Cython numpy
-
-    # Compile wheel
-    ${PYBIN}/python -m pip wheel /io/ -w /wheelhouse/
-
-    # Move pure wheels to target directory
-    mkdir -p /io/wheelhouse
-    mv /wheelhouse/*any.whl /io/wheelhouse || echo "No pure wheels to move"
-
-    # Bundle external shared libraries into the wheel
-    for whl in /wheelhouse/*.whl; do
-        auditwheel repair $whl -w /io/wheelhouse/
+	# Build wheels
+    for PYBIN in /opt/python/*/bin/; do
+		clean_project
+		${PYBIN}/python -m pip install setuptools wheel Cython numpy
+		${PYBIN}/python -m pip wheel /io/ -w /wheelhouse/
     done
 
-    # Rename wheels to match all Python versions
-    mmv "/io/wheelhouse/noisily-*-cp*-cp*-manylinux1_*.whl" \
-        "/io/wheelhouse/noisily-#1-py2.py3-none-manylinux1_#4.whl"
+    # Bundle external shared libraries into the wheel
+    for whl in /wheelhouse/noisily*.whl; do
+        auditwheel repair $whl -w /io/wheelhouse/
+    done
 
     # Set permissions on wheels
     chmod -R a+rw /io/wheelhouse
 
-    # Install packages and test with all Python versions
+	# Install wheels and test
     for PYBIN in /opt/python/*/bin/; do
-		${PYBIN}/python -m pip install numpy
         ${PYBIN}/python -m pip install noisily --no-index -f /io/wheelhouse
         ${PYBIN}/python /io/tests/test.py
-        clean_project
     done
 fi

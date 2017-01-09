@@ -1,0 +1,12 @@
+include MANIFEST.in
+include setup.py
+
+graft noisily
+
+global-exclude *.c
+global-exclude *.so
+global-exclude *.pyc
+
+include noise-c/src/*.rs
+include noise-c/*.rs
+include noise-c/Cargo.toml
