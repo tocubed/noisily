@@ -5,11 +5,20 @@ from Cython.Distutils import build_ext
 
 import numpy
 
+import sys
+
+if sys.platform == 'win32':
+    pass
+elif sys.platform == 'darwin':
+    noise_link_libraries = ['System', 'c', 'm']
+else:
+    noise_link_libraries = ['util', 'dl', 'pthread', 'gcc_s', 'c', 'm', 'rt', 'util']
 
 ext = Extension('noisily.noise',
         sources=['noisily/noise.pyx'],
         include_dirs=['noise-c/include', numpy.get_include()],
         extra_objects=['noise-c/target/release/libnoise_c.a'],
+        libraries=noise_link_libraries,
 )
 
 extensions = [ext,]
