@@ -121,6 +121,7 @@ else
 
     # Install packages and test with all Python versions
     for PYBIN in /opt/python/*/bin/; do
+		${PYBIN}/python -m pip install numpy
         ${PYBIN}/python -m pip install noisily --no-index -f /io/wheelhouse
         ${PYBIN}/python /io/tests/test.py
         clean_project
