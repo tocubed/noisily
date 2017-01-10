@@ -1,3 +1,5 @@
+language: generic
+
 matrix:
   include:
     - os: osx
@@ -6,6 +8,12 @@ matrix:
       services:
         - docker
       env: DOCKER_IMAGE=quay.io/pypa/manylinux1_x86_64
+    - os: linux
+      sudo: required
+      services:
+        - docker
+      env: DOCKER_IMAGE=quay.io/pypa/manylinux1_i686
+           PRE_CMD=linux32
 
 install:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then docker pull $DOCKER_IMAGE; fi
@@ -14,3 +22,30 @@ script:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then ./scripts/travis-build-wheels.sh $TRAVIS_OS_NAME; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then docker run --rm -v `pwd`:/io $DOCKER_IMAGE $PRE_CMD /io/scripts/travis-build-wheels.sh $TRAVIS_OS_NAME; fi
   - ls wheelhouse/
+
+before_deploy:
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo pip install appveyor-artifacts; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then appveyor-artifacts -c $(git rev-parse HEAD) -o tocubed -n noisily download; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export PYPI_DISTRIBUTIONS='check'; fi
+  - mkdir -p dist_; mv dist/noisily*.whl dist_; rm -rf dist; mv dist_ dist;
+  - mv wheelhouse/noisily*.whl dist; ls dist
+  - sudo pip install twine
+
+deploy:
+  - provider: releases
+    api_key:
+      secure: gocmV5Go486WSrFyHpRHsv8AooFjjwqOMxxQW4AFsfMQAPLKvv4K9oDrTcdwT9LYQq16VTP5aiZNVQI/7rJdB6iDUvm0z0u7HmW4WLVVUV4uA5YHvdZGCc3O3uYgile6HyZ5s3e6mVFYId+G6kPINGCyEKt2dKc0KzNJWllkBaTFgqAjwMLLjlENRPkYwX3UxPYytm3x13ElVb9q0Ea0tQAoKw77wTvnVc39W8+rkwTMMHGhA+qBcqt737+48OVl1G6kpWEeUXElNQEMDhpTvh06lq7FHTIhu8vVslKF35b5wzGO1tuo6oQKn45O4DmfFQO2HgaJRQfHOR9Jkp5t/GLgEsiJG3viv7YJeO4YdgIGL+d1pUNLBXYBnPvTDU694G9dnqCRJ4rF6v2pD7GMBxBhXU0XNlVKtI1p8a9ib35jofpqGrhqYuXGuuGQdE8tkjSm3hsHEiuxxCD8NJQt1G+3hZLRoey2k5gCfINY1psO4Kb8q4kvbYa7PEWWoUsNDBJZHcQAKZtWJLrtXE029w72sCemHU53Shh9a/ZSkXfKVOXRoc2J6BVgvXhoF/N82UV1s+/0OGOJne1v7zAxILEk8BD3AinaYAmzP62bjG/j64h2vYu3rbSZxS6uVBh4W7qm6aY7r6xOydK479q9Vh9+nX9jW0fBsBUGC/rJrXU=
+    file_glob: true
+    file: "${HOME}/build/${TRAVIS_REPO_SLUG}/dist/noisily*.whl"
+    skip_cleanup: true
+    on:
+      tags: true
+      repo: tocubed/noisily
+  - provider: pypi
+    user: tocubed
+    password:
+      secure: JKF/nbjimXVzuEilYBKWC8Pv4PqiVZXGGlgCdgCZ9Saq+FdDycYe8SyB5o6Z1+fyzFtTzuI4bbMZmO6otu0P2qRUF2RcEFCUZOPiik2/VaJY2TC9VjQwliVw4ISkvddDE1TdAPjFE5m7oTsHnGcI0+vyphBs71ANgFmg8q29t1vbO7/euRqORtCr9GQal5xbmywXZ/LBkDQqGvxq8UPktAQxnj1Pu/1k/eUOqQVGtvqZTmdLLil8h8HS2T+y68VyWqWRUXoZujrFBHcpc8Q6Sco3x1SkRRI2qdlJX6phG/Gco668OyxS+cIWRhiD91GKhxW4Ub12kERGR69om6/OBzptVlVefqfMNkVuVOV2osb6d4jrdLCuAV0+r28j+GRC52fPVRoGMj1KtoYk0EplFXft3TNfi7eBccUI1Qxd+G3cQCfG4Ww75h/dlcKzqH4//Tud0OUOjvd8Ie8Qy9t8hPRdNx27VFfeUt3utr3e/pE7zV1M/+j4gpELnR7HiCAI/tuEGM3fg+ofbByVm7bnlMUU85U1nRfJpJkkrH/glL+ZTTYMr6t+wDwu9dFP0hlve+cVkGEvBaXxKBR2r1YuRVZEDtUervxrjiMEvK3d68+aD24atdlDFpaRg03s+oBOeURIyO7zfa4a8zjM38HS36iGtdOzPgzqdnBLNZzBlbo=
+    skip_cleanup: true
+    on:
+      tags: true
+      repo: tocubed/noisily
