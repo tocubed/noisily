@@ -7,7 +7,7 @@ environment:
 
 install:
   - ps: |
-      $PyVersions = @("27", "34", "35")
+      $PyVersions = @("35")
       foreach ($pyver in $PyVersions) {
         $python = "C:\\Python$pyver${env:PYARCH}\\python"
         &$python -m pip install -U pip setuptools wheel Cython numpy
@@ -15,12 +15,11 @@ install:
   - curl -sSf -o rustup-init.exe https://win.rustup.rs/
   - rustup-init.exe -y --default-host %RUST_TARGET%
   - set PATH=%PATH%;C:\Users\appveyor\.cargo\bin
-  - if defined MSYS2_BITS set PATH=%PATH%;C:\msys64\mingw%MSYS2_BITS%\bin
 
 build_script:
   - pushd .\\noise-c && cargo build --release && popd
   - ps: |
-      $PyVersions = @("27", "34", "35")
+      $PyVersions = @("35")
       foreach ($pyver in $PyVersions) {
         $python = "C:\\Python$pyver${env:PYARCH}\\python"
         &$python -m pip -v wheel . -w .\\wheelhouse
@@ -31,12 +30,10 @@ test_script:
   - SET PROJPATH=C:\Projects\noisily
   - cd c:\projects
   - ps: |
-      $PyVersions = @("27", "34", "35")
+      $PyVersions = @("35")
       foreach ($pyver in $PyVersions) {
         $python = "C:\\Python$pyver${env:PYARCH}\\python"
         &$python -m pip -v install noisily --no-index -f "${env:PROJPATH}\\wheelhouse"
-        ls .
-        ls "${env:PROJPATH}"
         &$python "${env:PROJPATH}\\tests\\test.py"
       }
 

@@ -13,4 +13,3 @@ noise = { git = "https://github.com/tocubed/noise-rs" }
 
 [build-dependencies]
 rusty-cheddar = "0.3.0"
-regex = "0.2.1"

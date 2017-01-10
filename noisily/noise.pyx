@@ -10,8 +10,7 @@ __all__ += ["cell2_manhattan_inv", "cell3_manhattan_inv", "cell4_manhattan_inv"]
 __all__ += ["cell2_manhattan_value", "cell3_manhattan_value", "cell4_manhattan_value"]
 
 
-cdef extern from "portable_stdint.h":
-    ctypedef unsigned int uint32_t
+from libc.stdint cimport uint32_t
 
 cdef extern from "noise_c.h":
     ctypedef struct ns_PermutationTable:
