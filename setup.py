@@ -51,11 +51,17 @@ def get_cythonized_extensions():
 
 
 def parse_setuppy_commands():
-    build_commands = ('develop', 'install', 'sdist', 'build', 'build_ext', 'bdist_wheel', 'bdist_rpm')
+    build_commands = ('develop', 'install', 'build', 'build_ext', 'bdist_wheel', 'bdist_rpm')
 
     for command in build_commands:
         if command in sys.argv[1:]:
             return True
+
+    non_build_commands = ('sdist', 'egg_info')
+
+    for command in non_build_commands:
+        if command in sys.argv[1:]:
+            return False
 
     warnings.warn("Command is not a recognized or supported build command. Not building.")
 
