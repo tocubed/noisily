@@ -34,7 +34,8 @@ test_script:
       foreach ($pyver in $PyVersions) {
         $python = "C:\\Python$pyver${env:PYARCH}\\python"
         &$python -m pip -v install noisily --no-index -f "${env:PROJPATH}\\wheelhouse"
-        &$python "${env:PROJPATH}\\tests\\test.py"
+        &$python -m pip install -U pytest
+        &$python -m pytest "${env:PROJPATH}\\tests"
       }
 
 artifacts:

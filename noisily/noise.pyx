@@ -1,13 +1,13 @@
-__all__  = ["source"]
-__all__ += ["perlin2", "perlin3", "perlin4"]
-__all__ += ["value2", "value3", "value4"]
-__all__ += ["open_simplex2", "open_simplex3", "open_simplex4"]
-__all__ += ["cell2_range", "cell3_range", "cell4_range"]
-__all__ += ["cell2_range_inv", "cell3_range_inv", "cell4_range_inv"]
-__all__ += ["cell2_value", "cell3_value", "cell4_value"]
-__all__ += ["cell2_manhattan", "cell3_manhattan", "cell4_manhattan"]
-__all__ += ["cell2_manhattan_inv", "cell3_manhattan_inv", "cell4_manhattan_inv"]
-__all__ += ["cell2_manhattan_value", "cell3_manhattan_value", "cell4_manhattan_value"]
+__all__  = ["generator"]
+__all__ += ["perlin2D", "perlin3D", "perlin4D"]
+__all__ += ["value2D", "value3D", "value4D"]
+__all__ += ["open_simplex2D", "open_simplex3D", "open_simplex4D"]
+__all__ += ["cell2D_range", "cell3D_range", "cell4D_range"]
+__all__ += ["cell2D_range_inv", "cell3D_range_inv", "cell4D_range_inv"]
+__all__ += ["cell2D_value", "cell3D_value", "cell4D_value"]
+__all__ += ["cell2D_manhattan", "cell3D_manhattan", "cell4D_manhattan"]
+__all__ += ["cell2D_manhattan_inv", "cell3D_manhattan_inv", "cell4D_manhattan_inv"]
+__all__ += ["cell2D_manhattan_value", "cell3D_manhattan_value", "cell4D_manhattan_value"]
 
 
 from libc.stdint cimport uint32_t
@@ -131,41 +131,41 @@ cdef wrap_noise4D(noise4Dfp function):
     return result
 
 
-perlin2 = wrap_noise2D(ns_perlin2)
-perlin3 = wrap_noise3D(ns_perlin3)
-perlin4 = wrap_noise4D(ns_perlin4)
+perlin2D = wrap_noise2D(ns_perlin2)
+perlin3D = wrap_noise3D(ns_perlin3)
+perlin4D = wrap_noise4D(ns_perlin4)
 
-value2 = wrap_noise2D(ns_value2)
-value3 = wrap_noise3D(ns_value3)
-value4 = wrap_noise4D(ns_value4)
+value2D = wrap_noise2D(ns_value2)
+value3D = wrap_noise3D(ns_value3)
+value4D = wrap_noise4D(ns_value4)
 
-open_simplex2 = wrap_noise2D(ns_open_simplex2)
-open_simplex3 = wrap_noise3D(ns_open_simplex3)
-open_simplex4 = wrap_noise4D(ns_open_simplex4)
+open_simplex2D = wrap_noise2D(ns_open_simplex2)
+open_simplex3D = wrap_noise3D(ns_open_simplex3)
+open_simplex4D = wrap_noise4D(ns_open_simplex4)
 
-cell2_range = wrap_noise2D(ns_cell2_range)
-cell3_range = wrap_noise3D(ns_cell3_range)
-cell4_range = wrap_noise4D(ns_cell4_range)
+cell2D_range = wrap_noise2D(ns_cell2_range)
+cell3D_range = wrap_noise3D(ns_cell3_range)
+cell4D_range = wrap_noise4D(ns_cell4_range)
 
-cell2_range_inv = wrap_noise2D(ns_cell2_range_inv)
-cell3_range_inv = wrap_noise3D(ns_cell3_range_inv)
-cell4_range_inv = wrap_noise4D(ns_cell4_range_inv)
+cell2D_range_inv = wrap_noise2D(ns_cell2_range_inv)
+cell3D_range_inv = wrap_noise3D(ns_cell3_range_inv)
+cell4D_range_inv = wrap_noise4D(ns_cell4_range_inv)
 
-cell2_value = wrap_noise2D(ns_cell2_value)
-cell3_value = wrap_noise3D(ns_cell3_value)
-cell4_value = wrap_noise4D(ns_cell4_value)
+cell2D_value = wrap_noise2D(ns_cell2_value)
+cell3D_value = wrap_noise3D(ns_cell3_value)
+cell4D_value = wrap_noise4D(ns_cell4_value)
 
-cell2_manhattan = wrap_noise2D(ns_cell2_manhattan)
-cell3_manhattan = wrap_noise3D(ns_cell3_manhattan)
-cell4_manhattan = wrap_noise4D(ns_cell4_manhattan)
+cell2D_manhattan = wrap_noise2D(ns_cell2_manhattan)
+cell3D_manhattan = wrap_noise3D(ns_cell3_manhattan)
+cell4D_manhattan = wrap_noise4D(ns_cell4_manhattan)
 
-cell2_manhattan_inv = wrap_noise2D(ns_cell2_manhattan_inv)
-cell3_manhattan_inv = wrap_noise3D(ns_cell3_manhattan_inv)
-cell4_manhattan_inv = wrap_noise4D(ns_cell4_manhattan_inv)
+cell2D_manhattan_inv = wrap_noise2D(ns_cell2_manhattan_inv)
+cell3D_manhattan_inv = wrap_noise3D(ns_cell3_manhattan_inv)
+cell4D_manhattan_inv = wrap_noise4D(ns_cell4_manhattan_inv)
 
-cell2_manhattan_value = wrap_noise2D(ns_cell2_manhattan_value)
-cell3_manhattan_value = wrap_noise3D(ns_cell3_manhattan_value)
-cell4_manhattan_value = wrap_noise4D(ns_cell4_manhattan_value)
+cell2D_manhattan_value = wrap_noise2D(ns_cell2_manhattan_value)
+cell3D_manhattan_value = wrap_noise3D(ns_cell3_manhattan_value)
+cell4D_manhattan_value = wrap_noise4D(ns_cell4_manhattan_value)
 
 
 @cython.internal
@@ -250,9 +250,9 @@ cdef class source4D:
         return values
 
 
-cdef class source:
+cdef class generator:
     cdef object source
-    cdef int dimension
+    cdef readonly int dimension
 
     @cython.embedsignature(True)
     def __cinit__(self, noise, seed = 0, period = 256):

@@ -60,8 +60,9 @@ if [[ $1 == "osx" ]]; then
     pip wheel . -w ./wheelhouse
     pip install -v noisily --no-index -f ./wheelhouse
 
-	pushd ./tests
-	python ./test.py
+	pip install -U pytest
+	cd ../
+	py.test ./noisily/tests
 else
     install_openssl $OPENSSL_VERSION
     install_curl $CURL_VERSION
@@ -97,6 +98,7 @@ else
 	# Install wheels and test
     for PYBIN in /opt/python/*/bin/; do
         ${PYBIN}/python -m pip install noisily --no-index -f /io/wheelhouse
-        ${PYBIN}/python /io/tests/test.py
+        ${PYBIN}/python -m pip install pytest
+        ${PYBIN}/python -m pytest /io/tests/
     done
 fi
