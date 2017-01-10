@@ -6,6 +6,7 @@ graft noisily
 global-exclude *.c
 global-exclude *.so
 global-exclude *.pyc
+global-exclude *.pyd
 
 include noise-c/src/*.rs
 include noise-c/*.rs

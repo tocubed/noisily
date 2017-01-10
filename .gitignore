@@ -11,4 +11,6 @@ __pycache__/
 # Rust
 target/
 Cargo.lock
-*.h
+
+# Other
+noise-c/include/noise_c.h

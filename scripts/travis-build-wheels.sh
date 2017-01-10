@@ -77,6 +77,7 @@ else
 
     # Remove unsupported Python versions
     rm -rf /opt/python/cp26*
+    rm -rf /opt/python/cp33*
 
 	# Build wheels
     for PYBIN in /opt/python/*/bin/; do

@@ -15,15 +15,17 @@ def build_noise_c_crate():
         raise RuntimeError("Running cargo build failed!")
 
 
-def get_noise_c_link_libraries():
+def get_noise_ext_libraries():
     if sys.platform == 'win32':
-        libraries = [] # TODO Windows builds
+        shared_libraries = ['advapi32', 'ws2_32', 'userenv', 'shell32', 'advapi32', 'msvcrt']
     elif sys.platform == 'darwin':
-        libraries = ['System', 'c', 'm']
+        shared_libraries = ['System', 'c', 'm']
     else:
-        libraries = ['util', 'dl', 'pthread', 'gcc_s', 'c', 'm', 'rt', 'util']
+        shared_libraries = ['util', 'dl', 'pthread', 'gcc_s', 'c', 'm', 'rt', 'util']
 
-    return libraries
+    static_libraries = ['noise-c/target/release/' + ('libnoise_c.a' if sys.platform != 'win32' else 'noise_c.lib')]
+
+    return shared_libraries, static_libraries
 
 
 def get_cythonized_extensions():
@@ -34,11 +36,13 @@ def get_cythonized_extensions():
 
     import numpy
 
+    shared_libraries, static_libraries = get_noise_ext_libraries()
+
     noise = Extension('noisily.noise',
             sources=['noisily/noise.pyx'],
             include_dirs=['noise-c/include', numpy.get_include()],
-            extra_objects=['noise-c/target/release/libnoise_c.a'], # TODO Windows builds
-            libraries=get_noise_c_link_libraries(),
+            libraries=shared_libraries,
+            extra_objects=static_libraries,
     )
 
     extensions = [noise,]
@@ -47,7 +51,7 @@ def get_cythonized_extensions():
 
 
 def parse_setuppy_commands():
-    build_commands = ('develop', 'install', 'sdist', 'build', 'build_ext', 'bdist_wheel', 'bdist_rpm') # TODO Windows builds
+    build_commands = ('develop', 'install', 'sdist', 'build', 'build_ext', 'bdist_wheel', 'bdist_rpm')
 
     for command in build_commands:
         if command in sys.argv[1:]:
