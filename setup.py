@@ -73,7 +73,7 @@ def setup_package():
 
     metadata = dict(
         name='noisily',
-        version='0.0.1',
+        version='0.0.2',
         author='Priyank Patel',
         author_email='tocubed@gmail.com',
         url='https://github.com/tocubed/noisily',
