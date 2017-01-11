@@ -77,9 +77,11 @@ def setup_package():
         author='Priyank Patel',
         author_email='tocubed@gmail.com',
         url='https://github.com/tocubed/noisily',
-        license='MIT',
+        description = 'Procedural noise generation for Python',
+        license='Apache License 2.0',
         setup_requires=build_requires,
         install_requires=build_requires,
+        tests_require=['pytest'],
         cmdclass={},
         packages=['noisily'],
     )
