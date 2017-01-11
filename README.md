@@ -1,4 +1,7 @@
 # noisily
+
+[![Build Status](https://travis-ci.org/tocubed/noisily.svg?branch=master)](https://travis-ci.org/tocubed/noisily) ![https://ci.appveyor.com/api/projects/status/github/tocubed/noisily?svg=true](https://ci.appveyor.com/api/projects/status/github/tocubed/noisily?svg=true)
+
 Procedural noise generation for Python. 
 
 Uses noise functions from the Rust noise library at https://github.com/brendanzab/noise-rs. 
