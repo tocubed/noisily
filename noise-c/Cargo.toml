@@ -9,7 +9,7 @@ name = "noise_c"
 crate-type = ["staticlib"]
 
 [dependencies]
-noise = { git = "https://github.com/tocubed/noise-rs" }
+noise = { git = "https://github.com/tocubed/noise-rs", branch = "periodic-rng" }
 
 [build-dependencies]
 rusty-cheddar = "0.3.0"
