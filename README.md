@@ -25,3 +25,7 @@ generator = ns.generator(ns.cell2D_range_inv)
 # as the array, sans the last axis. E.g. (1024, 1024, 2) -> (1024, 1024)
 values = generator(points)
 ```
+## Install
+`pip install noisily` will install a binary distribution from PyPI.
+
+`python setup.py install` if you need to build from source. Make sure to have Rust installed and `cargo` in your path. 
